@@ -1,5 +1,5 @@
 {
-  "name": "byte-master",
+  "name": "rebellion",
   "scripts": {
     "execute": "bash execute.sh",
     "test": "jest"
