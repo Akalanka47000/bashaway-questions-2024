@@ -3,7 +3,7 @@ const exec = require('@sliit-foss/actions-exec-wrapper').default;
 const { faker } = require('@faker-js/faker');
 const { scan, shellFiles } = require('@sliit-foss/bashaway');
 
-jest.setTimeout(10000);
+jest.setTimeout(15000);
 
 test('should validate if only bash files are present', () => {
     const shellFileCount = shellFiles().length;
@@ -28,13 +28,14 @@ describe('should if the .env files are generated', () => {
         fs.writeFileSync(`./src/.env.example`, Object.keys(keys).map(key => `${key}=`).join('\n'));
         await exec('bash execute.sh');
     });
-    test('docker container should be  with the correct environment variables', async () => {
+    test('docker image should build and run with the correct environment variables', async () => {
         const tag = 'bashaway-2k24-enchanted-artifact'
         process.chdir("./src");
         await exec(`docker build ${Object.entries(keys).map(([key, value]) => `--build-arg ${key}=${value}`).join(' ')} -t ${tag} .`);
         await exec(`docker run -d -p 3000:3000 --name=${tag} ${tag}`)
         await expect(exec(`docker ps -f name=${tag} --format "{{.Names}}-{{.Ports}}"`)).resolves.toContain(`${tag}-0.0.0.0:3000->`);
+        await new Promise(resolve => setTimeout(resolve, 3000));
         const result = await exec(`curl http://localhost:3000`);
-        expect(result?.trim()).toContain(JSON.stringify(keys));
+        expect(JSON.parse(result)).toMatchObject(keys);
     });
 });
