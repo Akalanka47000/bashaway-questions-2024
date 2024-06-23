@@ -1,4 +1,4 @@
-# bashaway-questions-2023
+# bashaway-questions-2024
 
 Questions will be categorized under easy, medium, hard and extreme categories.
 Each question to be placed in a directory named with the question name, inside the directory representing it's difficulty.
