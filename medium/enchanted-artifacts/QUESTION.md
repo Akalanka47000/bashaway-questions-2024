@@ -13,14 +13,16 @@ KEY2=
 docker build --build-arg KEY1=fire --build-arg KEY2=water -t bashaway-2k24-enchanted-artifact .
 ```
 
-If you were Orin, how would you inscribe these ever-changing keys into the artifact's blueprint, ensuring they are seamlessly integrated and activated during the forging process? You are allowed to make changes to the Dockerfile.
+If you were Orin, how would you inscribe these ever-changing keys into the artifact's blueprint, ensuring they are seamlessly integrated and activated during the forging process? 
 
 ## Constraints
 
-- None
+- The script must be **purely written in bash within the execute.sh file**
+
+- You are allowed to make changes to the Dockerfile
 
 ## Output / Evaluation Criteria
 
-- The given express server should be able to be built with the given Dockerfile and run successfully. It's root route should all key values as a JSON object (These key values should be the same as the ones in the .env file and are picked from the container environment).
+- The given express server should be able to be built with the given Dockerfile and run successfully. It's root route should all key values as a JSON object (These key values should be the same as the ones in the .env file and are picked from the container environment)
 
-- The script should not crash if the .env.example file is missing
+- The script should not execute if the .env.example file is missing
