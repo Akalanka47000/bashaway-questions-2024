@@ -1,1 +1,0 @@
-# etherealbinarybeast command will be available once the tests are run
