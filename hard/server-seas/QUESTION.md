@@ -1,6 +1,6 @@
 # Server Seas
 
-Arrr! In the vast seas o' server management, yer mission be to set up a load balancer on port 11000. This balancer'll divvy up incoming requests 'twixt two identical servers, both sailin' on ports 11001 and 11002. Show yer mettle in the art o' load balancin' by configurin' this crew with precision, keepin' the ship runnin' smooth and fair for all who come aboard.
+Arrr! In the vast seas o' server management, yer mission be to set up a load balancer on port 11000. This balancer'll divvy up incoming requests 'twixt three identical servers, sailin' on ports 11001, 11002 and 11003. Show yer mettle in the art o' load balancin' by configurin' this crew with precision, keepin' the ship runnin' smooth and fair for all who come aboard.
 
 ## Constraints
 
@@ -8,6 +8,6 @@ Arrr! In the vast seas o' server management, yer mission be to set up a load bal
 
 ## Output / Evaluation Criteria
 
-- HTTP requests to the load balancer must be distributed evenly between the given two servers.
+- HTTP requests to the load balancer must be distributed evenly between the given servers.
 
-- The script should only execute if the two servers are running on the specified ports.
+- The script should only execute if the three servers are running on the specified ports.
