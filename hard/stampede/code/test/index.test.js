@@ -4,7 +4,7 @@ const { faker } = require('@faker-js/faker');
 const exec = require('@sliit-foss/actions-exec-wrapper').default;
 const { scan, shellFiles, dependencyCount, prohibitedCommands, restrictJavascript, restrictPython } = require('@sliit-foss/bashaway');
 
-jest.setTimeout(180000)
+jest.setTimeout(150000)
 
 const endpointResponses = {}
 
@@ -144,7 +144,68 @@ describe('should check installed dependencies', () => {
 });
 
 describe('primary tests', () => {
+    const randomPath = () => Object.keys(endpointResponses)[faker.number.int({ min: 0, max: Object.keys(endpointResponses).length - 1 })];
+    test('should check if rate limiting applies correctly', async () => {
+        for (let i = 0; i < 5; i++) {
+            const path = randomPath();
+            const responseStr = endpointResponses[path];
+            const response = await axios.get(`http://localhost:8000/${path}`);
+            expect(response.data).toBe(responseStr);
+        }
 
+        let path = randomPath();
+        let response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+
+        await new Promise(resolve => setTimeout(resolve, 60000));
+        for (let i = 0; i < 5; i++) {
+            const path = randomPath();
+            const responseStr = endpointResponses[path];
+            const response = await axios.get(`http://localhost:8000/${path}`);
+            expect(response.data).toBe(responseStr);
+        }
+        path = randomPath();
+        response = await axios.get(`http://localhost:8000/${path}`).catch((e) => e.response);
+        expect(response.status).toBe(429);
+    });
+    test('base server should have no rate limiting', async () => {
+        for (let i = 0; i < 10; i++) {
+            const path = randomPath();
+            const responseStr = endpointResponses[path];
+            const response = await axios.get(`http://localhost:7000/${path}`);
+            expect(response.data).toBe(responseStr);
+        }
+    });
 });
 
 describe('integrity tests', () => {
@@ -153,5 +214,8 @@ describe('integrity tests', () => {
     });
     test('general response should error out', async () => {
         await expect(axios.get('http://localhost:7000')).rejects.toBeInstanceOf(Error);
+    });
+    test('proxy response should error out', async () => {
+        await expect(axios.get('http://localhost:8000')).rejects.toBeInstanceOf(Error);
     });
 });
