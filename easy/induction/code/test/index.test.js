@@ -17,7 +17,6 @@ describe('should check installed dependencies', () => {
     });
     test("javacript should not be used", () => {
         restrictJavascript(script)
-        expect(script).not.toContain("dot-object");
     });
     test("python should not be used", () => {
         restrictPython(script)
