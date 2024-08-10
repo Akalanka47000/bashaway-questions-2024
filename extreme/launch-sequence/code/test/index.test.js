@@ -14,7 +14,6 @@ beforeAll(async () => {
     await exec("rm act_Linux_x86_64.tar.gz README.md LICENSE");
     const content = fs.readFileSync('./src/index.js', 'utf-8');
     fs.writeFileSync('./src/index.js', content.replace('ae13-4ddc-8f1a-4f3b-82f1-3f7b-0b1e-9e9c', consoleTarget));
-    await exec("bash execute.sh");
 });
 
 test('should validate if only bash files are present', () => {
@@ -25,7 +24,7 @@ test('should validate if only bash files are present', () => {
 
 test('release workflow should exist', () => {
     const workflow = fs.readFileSync('./src/.github/workflows/launch.yml', 'utf-8');
-    expect(workflow).toContain('name: Launch Sequence');
+    expect(workflow).toContain('run-name: Launch Sequence');
 });
 
 test('nothing should be hardcoded in the workflow', () => {
@@ -41,33 +40,36 @@ test('should install the published package and use it successfully on release co
     fs.mkdirSync("./out");
     process.chdir("./out");
     await exec("npm init -y");
+    const npmrc = `@cosmos:registry=http://packages.sliitfoss.org:6873`;
+    fs.writeFileSync(".npmrc", npmrc);
     const script = `const explore = require('@cosmos/launch-sequence');
 explore();`;
     fs.writeFileSync("index.js", script);
-    await expect(exec("npm install @cosmos/launch-sequence --registry http://packages.sliitfoss.org:6873")).rejects.toThrow();
+    await expect(exec("npm install @cosmos/launch-sequence")).rejects.toThrow();
     process.chdir("../src");
-    await exec("git commit -m 'chore: nothing' --allow-empty");
+    await exec("git commit -m \"chore: nothing\" --allow-empty");
     await new Promise(resolve => setTimeout(resolve, 30000));
     process.chdir("../out");
-    await expect(exec("npm install @cosmos/launch-sequence --registry http://packages.sliitfoss.org:6873")).rejects.toThrow();
+    await expect(exec("npm install @cosmos/launch-sequence")).rejects.toThrow();
     process.chdir("../src");
-    await exec("git commit -m 'release: initial version' --allow-empty");
+    await exec("git commit -m \"release: initial version\" --allow-empty");
     await new Promise(resolve => setTimeout(resolve, 30000));
     process.chdir("../out");
-    await expect(exec("npm install @cosmos/launch-sequence --registry http://packages.sliitfoss.org:6873")).resolves.not.toThrow();
-    await expect(exec("npm info @cosmos/launch-sequence version")).resolves.toContain("0.0.0");
+    await expect(exec("npm install @cosmos/launch-sequence")).resolves.not.toThrow();
+    await expect(exec("bash -c \"npm list @cosmos/launch-sequence --depth=0 | grep @cosmos/launch-sequence | awk '{print $2}' | sed 's/@//'\"")).resolves.toContain("0.0.0");
     const output = await exec("node index.js");
     expect(output).toContain(consoleTarget);
     process.chdir("../src");
     await exec("npm version patch");
+
     const content = fs.readFileSync('./index.js', 'utf-8');
     const newConsoleTarget = faker.string.uuid();
     fs.writeFileSync('./index.js', content.replace(consoleTarget, newConsoleTarget));
     await exec("act -P ubuntu-22.04=catthehacker/ubuntu:full-22.04");
     await new Promise(resolve => setTimeout(resolve, 30000));
     process.chdir("../out");
-    await expect(exec("npm install @cosmos/launch-sequence --registry http://packages.sliitfoss.org:6873")).resolves.not.toThrow();
-    await expect(exec("npm info @cosmos/launch-sequence version")).resolves.toContain("0.0.1");
+    await expect(exec("npm install @cosmos/launch-sequence@0.0.1")).resolves.not.toThrow();
+    await expect(exec("bash -c \"npm list @cosmos/launch-sequence --depth=0 | grep @cosmos/launch-sequence | awk '{print $2}' | sed 's/@//'\"")).resolves.toContain("0.0.1");
     const newOutput = await exec("node index.js");
     expect(newOutput).toContain(newConsoleTarget);
 });

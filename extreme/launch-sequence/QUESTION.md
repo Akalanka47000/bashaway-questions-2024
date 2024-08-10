@@ -10,7 +10,7 @@ As the stars align, simulate the mystical process where a commit message matchin
 
 ## Output / Evaluation Criteria
 
-- A Github workflow file named `Launch Sequence` under `launch.yml` must be created in the `.github/workflows` directory of the package which must be triggered by the commit message pattern `release: <message>` where you are responsible for facilitating the Git repository creation.
+- A Github workflow file with run name `Launch Sequence` under `launch.yml` must be created in the `.github/workflows` directory of the package which must be triggered by the commit message pattern `release: <message>` where you are responsible for setting up the Git repository.
 
 - The workflow must publish the package to the registry at `http://packages.sliitfoss.org:6873`.
 
