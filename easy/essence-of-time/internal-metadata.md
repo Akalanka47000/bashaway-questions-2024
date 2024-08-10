@@ -1,0 +1,1 @@
+strict inputs -> true
